@@ -5,12 +5,18 @@ from imports import *
 class CellDataset(torch.utils.data.Dataset):
     def __init__(self, 
         image_paths, mask_paths
-        , augment = None
+        , is_training
     ):
         self.image_paths, self.mask_paths = image_paths, mask_paths
-        self.augment = augment
+        self.is_training = is_training
+
+        self.augment = A.Compose([
+            A.HorizontalFlip(), A.VerticalFlip(), 
+        ])
         self.transform = A.Compose([
-            A.Resize(512, 512, p = 1), 
+            A.Resize(
+                512, 512, 
+            ), 
             AT.ToTensorV2(), 
         ])
 
@@ -19,7 +25,7 @@ class CellDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         image, mask = np.load(self.image_paths[index]), np.load(self.mask_paths[index])
-        if self.augment is not None:
+        if self.is_training:
             augmented = self.augment(image = image, mask = mask)
             image, mask = augmented["image"], augmented["mask"]
 
