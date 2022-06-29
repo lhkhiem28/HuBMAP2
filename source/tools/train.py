@@ -44,7 +44,7 @@ wandb.init(
     project = "HuBMAP2", name = "vanilla", 
     config = {
         "num_gpus": 3, 
-        "num_epochs": 3, 
+        "num_epochs": 20, 
     }
 )
 save_ckp_path = "../ckps/{}".format("vanilla")
