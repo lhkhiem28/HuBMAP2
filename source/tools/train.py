@@ -54,6 +54,6 @@ train_fn(
     loaders, model, 
     criterion, optimizer
     , scheduler = None
-    , save_ckp_path = None, training_verbose = True, 
+    , save_ckp_path = save_ckp_path, training_verbose = True, 
 )
 wandb.finish()
