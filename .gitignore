@@ -2,3 +2,4 @@
 **/__pycache__
 /ckps
 /source/backend
+/source/wandb
