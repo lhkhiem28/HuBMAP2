@@ -33,10 +33,9 @@ def train_fn(
         if scheduler is not None:
             scheduler.step()
 
-        epoch_loss, epoch_dice = running_loss/len(loaders["train"].dataset), running_dice/len(loaders["train"].dataset)
-        wandb.log({"train_loss": epoch_loss, "train_dice": epoch_dice})
+        train_loss, train_dice = running_loss/len(loaders["train"].dataset), running_dice/len(loaders["train"].dataset)
         if training_verbose:
-            print("{:<5} | ".format("train") + "loss: {:.4f}, dice: {:.4f}".format(epoch_loss, epoch_dice))
+            print("{:<5} | ".format("train") + "loss: {:.4f}, dice: {:.4f}".format(train_loss, train_dice))
 
         with torch.no_grad():
             model.eval()
@@ -49,13 +48,13 @@ def train_fn(
 
                 running_loss, running_dice = running_loss + loss.item()*images.size(0), running_dice + dice.item()*images.size(0)
 
-        epoch_loss, epoch_dice = running_loss/len(loaders["val"].dataset), running_dice/len(loaders["val"].dataset)
-        wandb.log({"val_loss": epoch_loss, "val_dice": epoch_dice})
+        val_loss, val_dice = running_loss/len(loaders["val"].dataset), running_dice/len(loaders["val"].dataset)
         if training_verbose:
-            print("{:<5} | ".format("val") + "loss: {:.4f}, dice: {:.4f}".format(epoch_loss, epoch_dice))
+            print("{:<5} | ".format("val") + "loss: {:.4f}, dice: {:.4f}".format(val_loss, val_dice))
 
-        if epoch_dice > best_dice:
-            best_dice = epoch_dice
+        wandb.log({"train_loss": train_loss, "val_loss": val_loss}, step = epoch), wandb.log({"train_dice": train_dice, "val_dice": val_dice}, step = epoch)
+        if val_dice > best_dice:
+            best_dice = val_dice
             torch.save(model.module, "{}/best.ptl".format(save_ckp_path))
 
     print("\nValidation ...\n" + " = "*16)
